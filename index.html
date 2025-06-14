@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MakerDeck Space-Time Luminarium (STL) - Vivid Model Viewer</title>
+    <meta name="description" content="Interactive 3D STL model viewer with highly randomized light movements, on-demand color randomization, a twinkling starfield, extensive customization, and a demo mode.">
+    <link rel="canonical" href="https://pirillo.com/arcade/makerdeck-stl.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pirillo.com/arcade/makerdeck-stl.html">
+    <meta property="og:title" content="MakerDeck Space-Time Luminarium (STL) - Vivid Randomization & Demo">
+    <meta property="og:description" content="Your STL model in a mesmerizing cosmic ballet with highly unpredictable light paths, a 'Randomize Colors' feature, and an instant 'Run Demo' option.">
+    <meta property="og:image" content="https://pirillo.com/arcade/images/makerdeck-stl.png">
+    <meta property="og:site_name" content="Pirillo.com Arcade">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://pirillo.com/arcade/space-time-luminarium">
+    <meta property="twitter:title" content="MakerDeck Space-Time Luminarium (STL) - Vivid Randomization & Demo">
+    <meta property="twitter:description" content="Your STL model in a mesmerizing cosmic ballet with highly unpredictable light paths, a 'Randomize Colors' feature, and an instant 'Run Demo' option.">
+    <meta property="twitter:image" content="https://pirillo.com/arcade/images/makerdeck-stl.png">
+    <link rel="icon" href="https://pirillo.com/favicon.ico" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;300;400;700&family=Audiowide&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;300;400;700&family=Audiowide&display=swap"></noscript>
+
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" as="script">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "MakerDeck Space-Time Luminarium (STL)",
+      "operatingSystem": "All (Web Browser)",
+      "applicationCategory": "EntertainmentApplication",
+      "applicationSubCategory": "3DGraphics",
+      "description": "An interactive web application that allows users to upload 3D models (STL files) or run a demo model, viewing them in an extreme immersive disco party scene with an overwhelming amount of dynamic lighting that orbits the model in true 3D, a vast twinkling starfield, scene capture functionality, and extensive user-configurable options. Version 6.8.6 repositions the @MakerDeck watermark on mobile to be under the Options link.",
+      "url": "https://pirillo.com/arcade/makerdeck-stl.html",
+      "author": {
+        "@type": "Organization",
+        "name": "Pirillo.com Arcade",
+        "url": "https://pirillo.com/arcade/"
+      },
+      "offers": { "@type": "Offer", "price": "0" },
+      "softwareVersion": "6.8.6", /* Feature: Repositioned @MakerDeck watermark on mobile */
+      "keywords": ["3D model viewer", "STL viewer", "disco lights", "space", "luminarium", "immersive 3D", "webgl", "three.js", "MakerDeck", "scene capture", "configurable options", "customizable", "slow motion", "celestial dance", "drag and drop", "camera presets", "motion control", "3D lighting", "random colors", "demo model"]
+    }
+    </script>
+
+    <style>
+        :root {
+            --font-body: 'Exo 2', sans-serif;
+            --font-display-strong: 'Audiowide', cursive;
+            --color-bg: #000000;
+            --color-primary: #00f0ff;
+            --color-secondary: #f000ff;
+            --color-accent: #fff000; /* Yellow */
+            --color-text: #f0f0f0;
+            --color-text-muted: #cccccc;
+            --color-error-rgb: 255, 30, 30;
+            --color-success-rgb: 30, 255, 130; 
+            --color-accent-rgb: 255, 240, 0; /* Yellow RGB */
+            --color-primary-rgb: 0, 240, 255;
+            --color-secondary-rgb: 240, 0, 255;
+            --color-white-glow-rgb: 255, 255, 255;
+
+            --shadow-glow-primary: 0 0 10px rgba(var(--color-primary-rgb), 0.5), 0 0 18px rgba(var(--color-primary-rgb), 0.3);
+            --shadow-glow-secondary: 0 0 10px rgba(var(--color-secondary-rgb), 0.5), 0 0 18px rgba(var(--color-secondary-rgb), 0.3);
+            --shadow-glow-accent: 0 0 10px rgba(var(--color-accent-rgb), 0.5), 0 0 18px rgba(var(--color-accent-rgb), 0.3);
+            --shadow-glow-accent-strong: 0 0 6px var(--color-accent), 0 0 10px var(--color-accent); 
+            --shadow-glow-accent-soft: 0 0 8px rgba(var(--color-accent-rgb), 0.4), 0 0 15px rgba(var(--color-accent-rgb), 0.25);
+            --shadow-glow-white-soft: 0 0 8px rgba(var(--color-white-glow-rgb),0.6), 0 0 15px rgba(var(--color-white-glow-rgb),0.4);
+            
+            --border-radius-ui: 6px;
+            --spacing-unit: 8px;
+            --control-edge-offset: 12px; 
+            --transition-speed-ui: 0.2s;
+            --transition-bezier-ui: cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            line-height: 1.6;
+            overflow: hidden; 
+            display: flex; flex-direction: column;
+            min-height: 100vh; height: 100vh;
+        }
+        
+        .floating-control-button {
+            font-family: var(--font-display-strong);
+            font-weight: 700; 
+            font-size: 0.9rem; 
+            color: rgba(var(--color-accent-rgb), 0.75); 
+            text-decoration: none;
+            text-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.3), 0 0 6px rgba(var(--color-accent-rgb),0.15); 
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            background: transparent;
+            border: none;
+            padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit) * 1); 
+            text-transform: none; 
+            letter-spacing: normal; 
+            opacity: 1; 
+            display: inline-block; 
+            position: relative; 
+        }
+        .floating-control-button:hover {
+            color: rgba(var(--color-accent-rgb), 0.85); 
+            text-shadow: var(--shadow-glow-accent-strong);
+            transform: none; 
+        }
+        
+        .app-main-wrapper {
+            flex-grow: 1; position: relative;
+            width: 100%; height: 100vh;
+            overflow: hidden; 
+            transition: box-shadow 0.3s ease-out;
+        }
+        .app-main-wrapper.dragover {
+            box-shadow: inset 0 0 0 5px var(--color-accent);
+        }
+
+        .viewer-area-wrapper {
+            width: 100%; height: 100%;
+            background-color: transparent;
+            position: absolute; top: 0; left: 0;
+        }
+        #model-viewer-canvas { width: 100%; height: 100%; display: block; }
+
+        .initial-prompt {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center; color: var(--color-text); z-index: 100;
+            padding: 0;
+            background: transparent;
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+        }
+        .initial-prompt-title { 
+            font-family: var(--font-display-strong);
+            font-size: 5.5rem; 
+            margin-bottom: -15px; 
+            color: var(--color-primary);
+            animation: pulseColorTextSupernova 20s infinite alternate; 
+            text-shadow: 0 0 20px rgba(var(--color-primary-rgb),0.9), 0 0 40px rgba(var(--color-primary-rgb),0.7), 0 0 60px rgba(var(--color-secondary-rgb),0.5);
+        }
+        @keyframes pulseColorTextSupernova { 
+            0%   { color: var(--color-primary); text-shadow: 0 0 20px rgba(var(--color-primary-rgb),0.9), 0 0 40px rgba(var(--color-primary-rgb),0.7), 0 0 60px rgba(var(--color-secondary-rgb),0.5); }
+            25%  { color: var(--color-secondary); text-shadow: 0 0 20px rgba(var(--color-secondary-rgb),0.9), 0 0 40px rgba(var(--color-secondary-rgb),0.7), 0 0 60px rgba(var(--color-primary-rgb),0.5); }
+            50%  { color: var(--color-accent); text-shadow: 0 0 20px rgba(var(--color-accent-rgb),0.9), 0 0 40px rgba(var(--color-accent-rgb),0.7), 0 0 60px rgba(var(--color-white-glow-rgb),0.5); }
+            75%  { color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.9), 0 0 40px rgba(255,255,255,0.7), 0 0 60px rgba(var(--color-primary-rgb),0.5); }
+            100% { color: var(--color-primary); text-shadow: 0 0 20px rgba(var(--color-primary-rgb),0.9), 0 0 40px rgba(var(--color-primary-rgb),0.7), 0 0 60px rgba(var(--color-secondary-rgb),0.5); }
+        }
+        .initial-prompt-subtitle { 
+            font-family: 'Exo 2', sans-serif; font-weight: 300;
+            font-size: 1.8rem; 
+            margin-top: 0px; 
+            margin-bottom: calc(var(--spacing-unit) * 7); 
+            color: var(--color-text-muted);
+            letter-spacing: 1.2px;
+            text-shadow: var(--shadow-glow-white-soft);
+        }
+        .initial-actions-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-unit); 
+        }
+        .initial-actions-container .floating-control-button { 
+            font-size: 1.1rem; 
+            padding: calc(var(--spacing-unit) * 1.3) calc(var(--spacing-unit) * 2.8); 
+            color: var(--color-accent); 
+            text-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.5), 0 0 8px rgba(var(--color-accent-rgb), 0.3); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            border-radius: var(--border-radius-ui); 
+            background: transparent; 
+            transition: color 0.3s ease, text-shadow 0.3s ease; 
+            font-family: var(--font-display-strong); 
+            font-weight: 700; 
+        }
+        .initial-actions-container .floating-control-button:hover {
+            color: rgba(var(--color-accent-rgb), 0.85); 
+            text-shadow: var(--shadow-glow-accent-strong); 
+            background: transparent; 
+        }
+        .initial-actions-container .or-text {
+            font-size: 1.1rem; 
+            color: var(--color-text-muted);
+            font-family: var(--font-display-strong);
+            font-weight: 700;
+        }
+        
+        .controls-host {
+            position: absolute; 
+            bottom: var(--control-edge-offset); 
+            left: var(--control-edge-offset);   
+            z-index: 900;
+            opacity: 0;
+            transform: translateY(25px);
+            transition: transform 0.3s var(--transition-bezier-ui), opacity 0.3s ease; 
+            pointer-events: none;
+            display: flex;
+            flex-direction: row;
+            align-items: center; 
+            gap: calc(var(--spacing-unit) * 1.2); 
+        }
+         .controls-host.visible {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 1050;
+            color: var(--color-text); text-align: center; padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+        .loader.visible { opacity: 1; pointer-events: auto; }
+
+        .loader p {
+            margin-top: calc(var(--spacing-unit)*2.5); font-size: 1.5rem;
+            font-family: var(--font-display-strong); font-weight: 700; letter-spacing: 2.5px;
+            text-shadow: 0 0 10px var(--color-primary), 0 0 15px var(--color-secondary);
+            animation: flickerText 1.3s infinite alternate;
+        }
+        @keyframes flickerText {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.01); }
+        }
+        .spinner {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--color-primary);
+            border-right-color: var(--color-secondary);
+            border-bottom-color: var(--color-accent);
+            animation: spin 0.6s linear infinite, colorCycle 1.8s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes colorCycle {
+            0%, 100% { border-top-color: var(--color-primary); border-right-color: var(--color-secondary); border-bottom-color: var(--color-accent); }
+            33% { border-top-color: var(--color-secondary); border-right-color: var(--color-accent); border-bottom-color: var(--color-primary); }
+            66% { border-top-color: var(--color-accent); border-right-color: var(--color-primary); border-bottom-color: var(--color-secondary); }
+        }
+        
+        .message-overlay { 
+            position: fixed;
+            top: 20px; 
+            left: 50%;
+            transform: translateX(-50%) translateY(-150px); 
+            padding: 12px 24px; 
+            background-color: transparent; 
+            color: var(--color-accent); 
+            text-shadow: var(--shadow-glow-accent-strong); 
+            border-radius: var(--border-radius-ui);
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.4s var(--transition-bezier-ui);
+            pointer-events: none;
+            font-family: var(--font-body);
+            font-weight: 700;
+            min-width: 280px;
+            text-align: center;
+        }
+        .message-overlay.error { 
+             background-color: rgba(var(--color-error-rgb), 0.92); 
+             color: #fff; 
+             text-shadow: none; 
+             box-shadow: 0 4px 12px rgba(0,0,0,0.25); 
+        }
+        .message-overlay.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0); 
+            pointer-events: auto;
+        }
+        .message-overlay p { margin: 0; font-size: 0.9rem; }
+
+        /* Common styles for both watermarks */
+        .makerdeck-watermark {
+            font-family: var(--font-display-strong);
+            font-weight: 700;
+            color: rgba(var(--color-accent-rgb), 0.55);
+            text-decoration: none;
+            text-shadow: 0 0 4px rgba(var(--color-accent-rgb),0.2), 0 0 6px rgba(var(--color-accent-rgb),0.1);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            line-height: 1;
+            box-sizing: border-box; 
+        }
+        .makerdeck-watermark:hover {
+            color: rgba(var(--color-accent-rgb), 0.85);
+            text-shadow: var(--shadow-glow-accent-strong);
+        }
+
+        /* Desktop-specific watermark styles */
+        .desktop-watermark {
+            position: fixed;
+            bottom: var(--control-edge-offset);
+            right: var(--control-edge-offset);
+            z-index: 850;
+            display: block; 
+            font-size: 0.9rem; 
+            padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit) * 1); 
+        }
+
+        /* Mobile-specific watermark styles (initially hidden) */
+        .mobile-watermark {
+            display: none;
+            font-size: 0.8rem; 
+            padding: var(--spacing-unit); /* Match mobile button padding */
+            width: 100%; 
+            text-align: center; 
+            margin-top: calc(var(--spacing-unit) * 0.5); 
+        }
+
+
+        .options-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: rgba(8, 8, 12, 0.75); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 2.5);
+            border-radius: var(--border-radius-ui);
+            box-shadow: 0 0 25px rgba(0,0,0,0.5); 
+            z-index: 1200;
+            width: 90%;
+            max-width: 520px; 
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s var(--transition-bezier-ui), transform 0.3s var(--transition-bezier-ui);
+            border: 1px solid rgba(var(--color-primary-rgb), 0.1);
+            max-height: 85vh;
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .options-modal.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+        
+        .options-modal-close-btn {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: rgba(30, 30, 30, 0.85);
+            border: 1px solid rgba(var(--color-accent-rgb),0.3);
+            border-radius: 50%;
+            color: var(--color-accent);
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 30px; 
+            text-align: center;
+            padding: 0;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            z-index: 1201; 
+            /* Default for desktop: outside and to the right */
+            top: 0; 
+            right: calc(-1 * (32px + var(--spacing-unit))); 
+            left: auto; 
+            margin-left: 0; 
+            transform: none; 
+        }
+        .options-modal-close-btn:hover {
+            background-color: rgba(var(--color-accent-rgb), 0.4);
+            color: #000;
+            transform: scale(1.1); 
+        }
+
+
+        .options-modal .option-group {
+            margin-bottom: calc(var(--spacing-unit) * 1.8);
+        }
+        .options-modal label {
+            display: block;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-bottom: calc(var(--spacing-unit)*0.75);
+        }
+        .options-modal input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: rgba(var(--color-primary-rgb), 0.15);
+            border-radius: 4px;
+            outline: none;
+        }
+        .options-modal input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px var(--color-primary);
+        }
+        .options-modal input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 5px var(--color-primary);
+        }
+        .options-modal .slider-value {
+            display: inline-block;
+            min-width: 65px; 
+            text-align: right;
+            color: var(--color-accent);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .options-modal-actions-footer {
+            display: flex;
+            justify-content: center; 
+            gap: calc(var(--spacing-unit) * 2); 
+            margin-top: calc(var(--spacing-unit) * 2.5);
+            width: 100%;
+        }
+
+        .options-action-button {
+            font-family: var(--font-display-strong);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--color-accent);
+            background-color: rgba(var(--color-accent-rgb), 0.15);
+            border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+            padding: calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * 1.5);
+            border-radius: var(--border-radius-ui);
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-action-button:hover {
+            background-color: rgba(var(--color-accent-rgb), 0.3);
+            border-color: rgba(var(--color-accent-rgb), 0.5);
+            color: #fff;
+        }
+        
+        *:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+        /* Mobile / narrower screens (below 600px viewport width) */
+        @media (max-width: 599px) {
+            .options-modal-close-btn {
+                top: var(--spacing-unit); 
+                right: var(--spacing-unit); 
+                left: auto; 
+                transform: none; 
+                width: 30px;
+                height: 30px;
+                line-height: 28px; 
+                font-size: 1.1rem; 
+            }
+             .options-modal-close-btn:hover {
+                transform: scale(1.1); 
+            }
+        }
+
+        @media (max-width: 768px) {
+            .initial-prompt-title { font-size: 3.5rem; margin-bottom: -10px; } 
+            .initial-prompt-subtitle { font-size: 1.3rem; } 
+            .controls-host {
+                gap: calc(var(--spacing-unit) * 0.8); 
+            }
+            .floating-control-button { 
+                font-size: 0.8rem; 
+                padding: calc(var(--spacing-unit)*0.4) calc(var(--spacing-unit) * 0.8); 
+            }
+            .initial-actions-container {
+                flex-direction: column; 
+                gap: calc(var(--spacing-unit) * 0.8); 
+            }
+            .initial-actions-container .floating-control-button { 
+                 font-size: 1.0rem;
+                 padding: calc(var(--spacing-unit) * 1.1) calc(var(--spacing-unit) * 2.2);
+            }
+            .initial-actions-container .or-text {
+                 font-size: 1.0rem;
+            }
+            .loader p { font-size: 1.3rem; }
+           
+            .desktop-watermark { /* Adjust desktop watermark for tablet size */
+                font-size: 0.8rem;
+                bottom: calc(var(--control-edge-offset) - 4px);
+                right: calc(var(--control-edge-offset) - 4px);
+                padding: calc(var(--spacing-unit) * 0.4) calc(var(--spacing-unit) * 0.8);
+            }
+
+            .options-modal { 
+                width: 95%; 
+                padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 2);
+                max-height: 90vh;
+            }
+            .options-action-button { 
+                font-size: 0.85rem;
+                padding: calc(var(--spacing-unit) * 0.8) calc(var(--spacing-unit) * 1.2);
+            }
+            .message-overlay { 
+                padding: 10px 18px;
+                min-width: 240px;
+                font-size: 0.85rem;
+            }
+        }
+
+         @media (max-width: 480px) { 
+            .desktop-watermark {
+                display: none; /* Hide desktop version */
+            }
+            .mobile-watermark {
+                display: block; /* Show mobile version */
+            }
+            .initial-actions-container {
+                flex-direction: column;
+                gap: calc(var(--spacing-unit) * 1); 
+            }
+             .initial-actions-container .floating-control-button {
+                width: 80%; 
+                padding: calc(var(--spacing-unit) * 1.2) calc(var(--spacing-unit) * 1.5);
+             }
+            
+            .controls-host {
+                position: fixed; 
+                flex-direction: column; 
+                align-items: flex-start;   
+                gap: calc(var(--spacing-unit) * 0.5); /* Reduced gap slightly for watermark */
+            }
+
+            .controls-host .floating-control-button {
+                width: 100%; 
+                text-align: center; 
+                padding: var(--spacing-unit); /* Consistent padding */
+            }
+            .options-modal-actions-footer { 
+                flex-direction: column;
+                align-items: center;
+                gap: var(--spacing-unit);
+            }
+            .options-action-button {
+                width: 90%; 
+                max-width: 300px; 
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-main-wrapper">
+        <div class="viewer-area-wrapper">
+            <div id="initial-prompt" class="initial-prompt">
+                <h2 id="app-title" class="initial-prompt-title">MakerDeck</h2>
+                <p id="app-subtitle" class="initial-prompt-subtitle">Space-Time Luminarium (STL)</p>
+                <div class="initial-actions-container">
+                    <button id="initial-upload-button" class="floating-control-button">Upload an STL File</button>
+                    <span class="or-text">or</span>
+                    <button id="run-demo-button" class="floating-control-button">Run Demo</button>
+                </div>
+                <input type="file" id="stl-file-input-hidden" accept=".stl" class="visually-hidden">
+            </div>
+            <div id="model-viewer-canvas"></div>
+            <div id="viewer-loader" class="loader">
+                <div class="spinner"></div>
+                <p>Unleashing Disco Bots...</p>
+            </div>
+            <div id="viewer-message" class="message-overlay">
+                <p>Status Message</p>
+            </div>
+        </div>
+
+        <div class="controls-host" role="toolbar" aria-label="Viewer Controls">
+            <input type="file" id="stl-file-input-styled" accept=".stl" class="visually-hidden"> 
+            <button id="capture-scene-btn" class="floating-control-button">Capture</button>
+            <button id="toggle-motion-btn" class="floating-control-button">Stop</button>
+            <button id="options-btn" class="floating-control-button">Options</button>
+            <a href="https://twitch.tv/MakerDeck" target="_blank" rel="noopener noreferrer" class="makerdeck-watermark mobile-watermark">@MakerDeck</a>
+        </div>
+    </div>
+
+    <a href="https://twitch.tv/MakerDeck" target="_blank" rel="noopener noreferrer" class="makerdeck-watermark desktop-watermark">@MakerDeck</a>
+
+    <div id="options-modal" class="options-modal">
+        <button id="options-modal-close-btn" class="options-modal-close-btn" aria-label="Close options panel">&times;</button>
+        
+        <div class="option-group">
+            <label for="model-rotate-x-speed">Model X-Drift Speed: <span class="slider-value" id="model-rotate-x-speed-value">0.00000</span></label>
+            <input type="range" id="model-rotate-x-speed" min="0" max="0.005" step="0.00001" value="0"> 
+        </div>
+        <div class="option-group">
+            <label for="model-rotate-y-speed">Model Y-Drift Speed: <span class="slider-value" id="model-rotate-y-speed-value">0.00000</span></label>
+            <input type="range" id="model-rotate-y-speed" min="0" max="0.005" step="0.00001" value="0"> 
+        </div>
+        <div class="option-group">
+            <label for="model-rotate-z-speed">Model Z-Drift Speed: <span class="slider-value" id="model-rotate-z-speed-value">0.00000</span></label>
+            <input type="range" id="model-rotate-z-speed" min="0" max="0.005" step="0.00001" value="0"> 
+        </div>
+        <hr style="border-color: rgba(var(--color-primary-rgb), 0.15); margin: 15px 0;">
+        <div class="option-group">
+            <label for="num-disco-lights">Number of Lights: <span class="slider-value" id="num-disco-lights-value">0</span></label>
+            <input type="range" id="num-disco-lights" min="4" max="40" step="2" value="0"> 
+        </div>
+        <div class="option-group">
+            <label for="light-anim-speed">Light Animation Speed Factor: <span class="slider-value" id="light-anim-speed-value">0.000000</span></label>
+            <input type="range" id="light-anim-speed" min="0" max="0.01" step="0.000001" value="0"> </div>
+        <div class="option-group">
+            <label for="light-intensity">Light Intensity Factor: <span class="slider-value" id="light-intensity-value">0.00</span></label>
+            <input type="range" id="light-intensity" min="0.05" max="6" step="0.01" value="0">
+        </div>
+         <div class="option-group">
+            <label for="light-cone-angle">Avg. Light Cone Divisor (Larger=Narrower): <span class="slider-value" id="light-cone-angle-value">0.0</span></label>
+            <input type="range" id="light-cone-angle" min="0.1" max="15" step="0.1" value="0">
+        </div>
+        <hr style="border-color: rgba(var(--color-primary-rgb), 0.15); margin: 15px 0;">
+        <div class="option-group">
+            <label for="star-density">Star Density Factor: <span class="slider-value" id="star-density-value">0.00</span></label>
+            <input type="range" id="star-density" min="0.05" max="4" step="0.05" value="0">
+        </div>
+        <div class="option-group">
+            <label for="star-twinkle-speed">Star Twinkle Speed Factor: <span class="slider-value" id="star-twinkle-speed-value">0.0000</span></label>
+            <input type="range" id="star-twinkle-speed" min="0.0001" max="0.05" step="0.0001" value="0"> 
+        </div>
+         <div class="option-group">
+            <label for="star-rotation-speed">Starfield Rotation Factor: <span class="slider-value" id="star-rotation-speed-value">0.00000</span></label>
+            <input type="range" id="star-rotation-speed" min="0" max="0.01" step="0.00001" value="0"> 
+        </div>
+        
+        <div class="options-modal-actions-footer">
+            <button id="load-new-model-btn" class="options-action-button">Load New Model</button>
+            <button id="randomize-colors-btn" class="options-action-button">Randomize Colors</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" defer></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            if (typeof THREE === 'undefined') { 
+                console.error("THREE.js failed to load. Luminarium dark.");
+                const el = document.getElementById('initial-prompt');
+                if (el) el.innerHTML = '<h2 class="initial-prompt-title" style="color:red;">ERROR: 3D Engine Failed!</h2><p class="initial-prompt-subtitle">Please try refreshing.</p>';
+                return; 
+            }
+
+            const App = {
+                elements: { 
+                    appMainWrapper: document.querySelector('.app-main-wrapper'), 
+                    viewerCanvasContainer: document.getElementById('model-viewer-canvas'),
+                    initialPrompt: document.getElementById('initial-prompt'),
+                    appTitle: document.getElementById('app-title'), 
+                    appSubtitle: document.getElementById('app-subtitle'), 
+                    initialUploadButton: document.getElementById('initial-upload-button'),
+                    runDemoButton: document.getElementById('run-demo-button'), 
+                    stlFileInputHidden: document.getElementById('stl-file-input-hidden'),
+                    stlFileInputStyled: document.getElementById('stl-file-input-styled'), 
+                    captureSceneBtn: document.getElementById('capture-scene-btn'),
+                    toggleMotionBtn: document.getElementById('toggle-motion-btn'), 
+                    optionsBtn: document.getElementById('options-btn'),
+                    viewerLoader: document.getElementById('viewer-loader'),
+                    viewerMessage: document.getElementById('viewer-message'),
+                    controlsHost: document.querySelector('.controls-host'),
+                    optionsModal: document.getElementById('options-modal'),
+                    optionsModalCloseBtn: document.getElementById('options-modal-close-btn'),
+                    loadNewModelBtn: document.getElementById('load-new-model-btn'), 
+                    modelRotateXSpeedSlider: document.getElementById('model-rotate-x-speed'),
+                    modelRotateXSpeedValue: document.getElementById('model-rotate-x-speed-value'),
+                    modelRotateYSpeedSlider: document.getElementById('model-rotate-y-speed'),
+                    modelRotateYSpeedValue: document.getElementById('model-rotate-y-speed-value'),
+                    modelRotateZSpeedSlider: document.getElementById('model-rotate-z-speed'),
+                    modelRotateZSpeedValue: document.getElementById('model-rotate-z-speed-value'),
+                    numDiscoLightsSlider: document.getElementById('num-disco-lights'),
+                    numDiscoLightsValue: document.getElementById('num-disco-lights-value'),
+                    lightAnimSpeedSlider: document.getElementById('light-anim-speed'),
+                    lightAnimSpeedValue: document.getElementById('light-anim-speed-value'),
+                    lightIntensitySlider: document.getElementById('light-intensity'),
+                    lightIntensityValue: document.getElementById('light-intensity-value'),
+                    lightConeAngleSlider: document.getElementById('light-cone-angle'),
+                    lightConeAngleValue: document.getElementById('light-cone-angle-value'),
+                    starDensitySlider: document.getElementById('star-density'),
+                    starDensityValue: document.getElementById('star-density-value'),
+                    starTwinkleSpeedSlider: document.getElementById('star-twinkle-speed'),
+                    starTwinkleSpeedValue: document.getElementById('star-twinkle-speed-value'),
+                    starRotationSpeedSlider: document.getElementById('star-rotation-speed'),
+                    starRotationSpeedValue: document.getElementById('star-rotation-speed-value'),
+                    randomizeColorsBtn: document.getElementById('randomize-colors-btn'),
+                },
+
+                config: { 
+                    modelRotateXSpeed: 0.00010,  
+                    modelRotateYSpeed: 0.00010,  
+                    modelRotateZSpeed: 0.00010,  
+                    numDiscoLights: 20, 
+                    lightAnimSpeedFactor: 0.001400, 
+                    lightIntensityFactor: 5.0, 
+                    lightConeAngleFactor: 1.5,   
+                    starDensityFactor: 1.0,      
+                    starTwinkleSpeedFactor: 0.001, 
+                    starRotationSpeedFactor: 0.0005, 
+                    modelMotionActive: true, 
+                    DRIFT_SPEED_MULTIPLIER: 750, 
+                    DEFAULT_LIGHT_ANIM_SPEED_FACTOR: 0.00001, 
+                    DEFAULT_STAR_TWINKLE_SPEED_FACTOR: 0.0005,
+                    LIGHT_TARGET_UPDATE_INTERVAL_FRAMES: 120, 
+                    DEMO_STL_URL: 'assets/makerdeck-chris.stl', 
+                },
+
+                three: { 
+                    scene: null, camera: null, renderer: null, controls: null, currentModel: null,
+                    defaultMaterial: new THREE.MeshStandardMaterial({ 
+                        color: 0x030303, 
+                        roughness: 0.2,  
+                        metalness: 0.1,  
+                        vertexColors: false,
+                        envMapIntensity: 1.0 
+                    }),
+                    dynamicLights: { discoLights: [], ambientLight: null },
+                    clock: new THREE.Clock(),
+                    starFieldSystems: [],
+                    initialCameraPosition: new THREE.Vector3(0, 0.6, 2.2), 
+                    initialCameraLookAt: new THREE.Vector3(0,0,0),
+                },
+                
+                modelAutoRotationAxisNoise: { x: 0, y: 0, z: 0},
+
+                init() { 
+                    console.info(`MakerDeck Space-Time Luminarium (STL) v${this.getAppVersion()}: Initializing...`);
+                    const rootStyles = getComputedStyle(document.documentElement);
+                    this.cssVars = {
+                        errorRGB: rootStyles.getPropertyValue('--color-error-rgb').trim() || '255, 0, 0',
+                        accentRGB: rootStyles.getPropertyValue('--color-accent-rgb').trim() || '255, 240, 0', 
+                    };
+
+                    this.setupEventListeners();
+                    this.initThreeJS();
+                    this.updateControlStates(false);
+                    this.applyDiscoScene(); 
+                    this.initOptionsPanel(); 
+                },
+                getAppVersion() { 
+                    try {
+                        const schema = document.querySelector('script[type="application/ld+json"]');
+                        if (schema) return JSON.parse(schema.textContent).softwareVersion || "N/A";
+                    } catch (e) { /* ignore */ }
+                    return "N/A";
+                },
+                updateControlStates(modelLoaded) {
+                     if (modelLoaded) {
+                        this.elements.controlsHost.classList.add('visible');
+                        if (this.elements.toggleMotionBtn) { 
+                           this.elements.toggleMotionBtn.textContent = this.config.modelMotionActive ? 'Stop' : 'Start';
+                        }
+                    } else {
+                        this.elements.controlsHost.classList.remove('visible');
+                    }
+                },
+
+                setupEventListeners() { 
+                    this.elements.initialUploadButton.addEventListener('click', () => this.elements.stlFileInputHidden.click());
+                    this.elements.stlFileInputHidden.addEventListener('change', (event) => this.handleFileUpload(event.target.files)); 
+                    
+                    if (this.elements.runDemoButton) {
+                        this.elements.runDemoButton.addEventListener('click', () => this.loadSTLFromURL(this.config.DEMO_STL_URL, 'MakerDeck Demo.stl'));
+                    }
+                    
+                    if (this.elements.stlFileInputStyled) {
+                        this.elements.stlFileInputStyled.addEventListener('change', (event) => this.handleFileUpload(event.target.files)); 
+                    }
+
+                    if (this.elements.loadNewModelBtn) {
+                        this.elements.loadNewModelBtn.addEventListener('click', () => {
+                            if (this.elements.stlFileInputStyled) { 
+                                this.elements.stlFileInputStyled.click();
+                            }
+                        });
+                    }
+
+                    if(this.elements.captureSceneBtn) {
+                        this.elements.captureSceneBtn.addEventListener('click', () => this.captureSceneWithWatermark());
+                    }
+                    if(this.elements.toggleMotionBtn) {
+                        this.elements.toggleMotionBtn.addEventListener('click', () => this.toggleModelMotion());
+                    }
+                    if(this.elements.optionsBtn){
+                        this.elements.optionsBtn.addEventListener('click', () => this.toggleOptionsModal(true));
+                    }
+                    if(this.elements.optionsModalCloseBtn) {
+                        this.elements.optionsModalCloseBtn.addEventListener('click', () => this.toggleOptionsModal(false));
+                    }
+                    if(this.elements.randomizeColorsBtn) {
+                        this.elements.randomizeColorsBtn.addEventListener('click', () => this.randomizeLightColors());
+                    }
+                    
+                    this.elements.modelRotateXSpeedSlider.addEventListener('input', (e) => { this.config.modelRotateXSpeed = parseFloat(e.target.value); this.elements.modelRotateXSpeedValue.textContent = this.config.modelRotateXSpeed.toFixed(5);});
+                    this.elements.modelRotateYSpeedSlider.addEventListener('input', (e) => { this.config.modelRotateYSpeed = parseFloat(e.target.value); this.elements.modelRotateYSpeedValue.textContent = this.config.modelRotateYSpeed.toFixed(5);});
+                    this.elements.modelRotateZSpeedSlider.addEventListener('input', (e) => { this.config.modelRotateZSpeed = parseFloat(e.target.value); this.elements.modelRotateZSpeedValue.textContent = this.config.modelRotateZSpeed.toFixed(5);});
+                    
+                    this.elements.numDiscoLightsSlider.addEventListener('input', (e) => {
+                        this.config.numDiscoLights = parseInt(e.target.value);
+                        this.elements.numDiscoLightsValue.textContent = this.config.numDiscoLights;
+                        this.activateDiscoLights(); 
+                    });
+                    this.elements.lightAnimSpeedSlider.addEventListener('input', (e) => { this.config.lightAnimSpeedFactor = parseFloat(e.target.value); this.elements.lightAnimSpeedValue.textContent = this.config.lightAnimSpeedFactor.toFixed(6);}); 
+                    this.elements.lightIntensitySlider.addEventListener('input', (e) => { this.config.lightIntensityFactor = parseFloat(e.target.value); this.elements.lightIntensityValue.textContent = this.config.lightIntensityFactor.toFixed(2); this.updateLightIntensities(); });
+                    this.elements.lightConeAngleSlider.addEventListener('input', (e) => { this.config.lightConeAngleFactor = parseFloat(e.target.value); this.elements.lightConeAngleValue.textContent = this.config.lightConeAngleFactor.toFixed(1); this.updateLightConeAngles(); });
+
+                    this.elements.starDensitySlider.addEventListener('input', (e) => { this.config.starDensityFactor = parseFloat(e.target.value); this.elements.starDensityValue.textContent = this.config.starDensityFactor.toFixed(2); this.setupStarfield(); }); 
+                    this.elements.starTwinkleSpeedSlider.addEventListener('input', (e) => { this.config.starTwinkleSpeedFactor = parseFloat(e.target.value); this.elements.starTwinkleSpeedValue.textContent = this.config.starTwinkleSpeedFactor.toFixed(4);});
+                    this.elements.starRotationSpeedSlider.addEventListener('input', (e) => { this.config.starRotationSpeedFactor = parseFloat(e.target.value); this.elements.starRotationSpeedValue.textContent = this.config.starRotationSpeedFactor.toFixed(5);});
+                    
+                    window.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            if (this.elements.optionsModal.classList.contains('visible')) {
+                                this.toggleOptionsModal(false);
+                            }
+                        }
+                    });
+                    window.addEventListener('click', (e) => { 
+                        if (this.elements.optionsModal.classList.contains('visible') && 
+                            !this.elements.optionsModal.contains(e.target) && 
+                            e.target !== this.elements.optionsBtn &&
+                            e.target !== this.elements.optionsModalCloseBtn 
+                            ) {
+                            this.toggleOptionsModal(false);
+                        }
+                    });
+
+                    window.addEventListener('resize', () => this.onWindowResize(), false);
+
+                    const dropZone = this.elements.appMainWrapper; 
+                    dropZone.addEventListener('dragover', (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        event.dataTransfer.dropEffect = 'copy'; 
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        dropZone.classList.remove('dragover');
+                    });
+                    dropZone.addEventListener('drop', (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const files = event.dataTransfer.files;
+                        if (files.length > 0) {
+                            this.handleFileUpload(files); 
+                        }
+                    });
+                },
+
+                initOptionsPanel() { 
+                    this.elements.modelRotateXSpeedSlider.value = this.config.modelRotateXSpeed;
+                    this.elements.modelRotateXSpeedValue.textContent = this.config.modelRotateXSpeed.toFixed(5);
+                    this.elements.modelRotateYSpeedSlider.value = this.config.modelRotateYSpeed;
+                    this.elements.modelRotateYSpeedValue.textContent = this.config.modelRotateYSpeed.toFixed(5);
+                    this.elements.modelRotateZSpeedSlider.value = this.config.modelRotateZSpeed;
+                    this.elements.modelRotateZSpeedValue.textContent = this.config.modelRotateZSpeed.toFixed(5);
+
+                    this.elements.numDiscoLightsSlider.value = this.config.numDiscoLights;
+                    this.elements.numDiscoLightsValue.textContent = this.config.numDiscoLights;
+                    
+                    this.elements.lightAnimSpeedSlider.value = this.config.lightAnimSpeedFactor;
+                    this.elements.lightAnimSpeedValue.textContent = this.config.lightAnimSpeedFactor.toFixed(6); 
+                    
+                    this.elements.lightIntensitySlider.value = this.config.lightIntensityFactor;
+                    this.elements.lightIntensityValue.textContent = this.config.lightIntensityFactor.toFixed(2);
+
+                    this.elements.lightConeAngleSlider.value = this.config.lightConeAngleFactor;
+                    this.elements.lightConeAngleValue.textContent = this.config.lightConeAngleFactor.toFixed(1); 
+                    
+                    this.elements.starDensitySlider.value = this.config.starDensityFactor;
+                    this.elements.starDensityValue.textContent = this.config.starDensityFactor.toFixed(2);
+                    this.elements.starTwinkleSpeedSlider.value = this.config.starTwinkleSpeedFactor;
+                    this.elements.starTwinkleSpeedValue.textContent = this.config.starTwinkleSpeedFactor.toFixed(4);
+                    this.elements.starRotationSpeedSlider.value = this.config.starRotationSpeedFactor;
+                    this.elements.starRotationSpeedValue.textContent = this.config.starRotationSpeedFactor.toFixed(5);
+                },
+
+                toggleOptionsModal(show) { 
+                    if (show) {
+                        this.elements.optionsModal.classList.add('visible');
+                    } else {
+                        this.elements.optionsModal.classList.remove('visible');
+                    }
+                },
+
+                toggleModelMotion() {
+                    this.config.modelMotionActive = !this.config.modelMotionActive;
+                    if (this.elements.toggleMotionBtn) {
+                        this.elements.toggleMotionBtn.textContent = this.config.modelMotionActive ? 'Stop' : 'Start';
+                    }
+                },
+                
+                _getRandomHexColor() {
+                    const color = new THREE.Color();
+                    color.setHSL(Math.random(), 0.9 + Math.random() * 0.1, 0.5 + Math.random() * 0.2);
+                    return color.getHex();
+                },
+
+                randomizeLightColors() {
+                    if (!this.three.dynamicLights.discoLights.length && this.three.currentModel) { 
+                        this.showMessage("No lights to randomize yet. Adjust 'Number of Lights'.", false, 3000);
+                        return;
+                    }
+                     if (!this.three.currentModel) {
+                        this.showMessage("Load a model first to enable light options.", false, 3000);
+                        return;
+                    }
+                    this.three.dynamicLights.discoLights.forEach(light => {
+                        light.color.setHex(this._getRandomHexColor());
+                    });
+                    this.showMessage("Light colors randomized!", false, 2000);
+                },
+
+                initThreeJS() { 
+                    const container = this.elements.viewerCanvasContainer;
+                    if (!container || !THREE) return;
+
+                    this.three.scene = new THREE.Scene();
+                    this.three.camera = new THREE.PerspectiveCamera(75, container.clientWidth / Math.max(1, container.clientHeight), 0.1, 12000);
+                    this.three.camera.position.copy(this.three.initialCameraPosition);
+                    this.three.camera.lookAt(this.three.initialCameraLookAt);
+
+                    this.three.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); 
+                    this.three.renderer.setPixelRatio(window.devicePixelRatio);
+                    this.three.renderer.setSize(container.clientWidth, container.clientHeight);
+                    this.three.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                    this.three.renderer.toneMappingExposure = 1.0; 
+                    this.three.renderer.outputEncoding = THREE.sRGBEncoding; 
+                    container.appendChild(this.three.renderer.domElement);
+                    
+                    this.three.dynamicLights.ambientLight = new THREE.AmbientLight(0x505070, 0.02); 
+                    this.three.scene.add(this.three.dynamicLights.ambientLight);
+
+                    if (typeof THREE.OrbitControls !== 'undefined') {
+                        this.three.controls = new THREE.OrbitControls(this.three.camera, this.three.renderer.domElement);
+                        this.three.controls.enableDamping = true; 
+                        this.three.controls.dampingFactor = 0.02; 
+                        this.three.controls.minDistance = 0.01; 
+                        this.three.controls.maxDistance = 1000; 
+                        this.three.controls.autoRotate = false; 
+                        this.three.controls.target.copy(this.three.initialCameraLookAt);
+                        this.setupOrbitControlsInteractionDetection(); 
+                    } else { this.showMessage("Error: Camera controls missing.", true); }
+                    
+                    this.onWindowResize(); 
+                    this.animate(); 
+                },
+
+                animate() {
+                    requestAnimationFrame(() => this.animate()); 
+                    const delta = this.three.clock.getDelta();
+                    const elapsedTime = this.three.clock.getElapsedTime();
+
+                    if (this.config.modelMotionActive && this.three.currentModel && this.three.controls && !this.three.controls.manualRotation) { 
+                        const time = elapsedTime * 0.00005; 
+                        this.modelAutoRotationAxisNoise.x = (Math.sin(time * 0.53) + Math.sin(time * 1.11)) * 0.5;
+                        this.modelAutoRotationAxisNoise.y = (Math.cos(time * 0.71) + Math.cos(time * 1.47)) * 0.5;
+                        this.modelAutoRotationAxisNoise.z = (Math.sin(time * 0.97) + Math.cos(time * 1.63)) * 0.5;
+
+                        const noiseModX = 0.4 + 0.6 * this.modelAutoRotationAxisNoise.x; 
+                        const noiseModY = 0.4 + 0.6 * this.modelAutoRotationAxisNoise.y;
+                        const noiseModZ = 0.4 + 0.6 * this.modelAutoRotationAxisNoise.z;
+                        
+                        this.three.currentModel.rotation.x += this.config.modelRotateXSpeed * noiseModX * this.config.DRIFT_SPEED_MULTIPLIER * delta;
+                        this.three.currentModel.rotation.y += this.config.modelRotateYSpeed * noiseModY * this.config.DRIFT_SPEED_MULTIPLIER * delta; 
+                        this.three.currentModel.rotation.z += this.config.modelRotateZSpeed * noiseModZ * this.config.DRIFT_SPEED_MULTIPLIER * delta;
+                    }
+                    if (this.three.controls) this.three.controls.update(); 
+
+                    const lightAnimModulation = this.config.lightAnimSpeedFactor / this.config.DEFAULT_LIGHT_ANIM_SPEED_FACTOR;
+
+                    this.three.dynamicLights.discoLights.forEach((light, index) => {
+                        const timeOffset = light.timeSeed; 
+                        const basePosSpeed = (0.0002 + light.speedSeed * 0.0003) * 120; 
+                        const effectivePosSpeed = basePosSpeed * lightAnimModulation;
+                        
+                        const baseIntensityPulsateSpeed = 0.000005 + light.speedSeed * 0.000005; 
+                        const baseAnglePulsateSpeed = 0.000002 + light.speedSeed * 0.000003;    
+                        const basePenumbraPulsateSpeed = 0.000001 + light.speedSeed * 0.000002; 
+                        const intensitySine = Math.sin(elapsedTime * (baseIntensityPulsateSpeed + index*0.0000002) * lightAnimModulation + timeOffset);
+                        light.intensity = ( ((intensitySine + 1.5) / 2.5 * 0.5) + 0.5 ) * this.config.lightIntensityFactor; 
+                        light.angle = Math.PI / (Math.max(0.1, this.config.lightConeAngleFactor) + Math.sin(elapsedTime * baseAnglePulsateSpeed * lightAnimModulation + timeOffset * 1.1) * (Math.max(0.1, this.config.lightConeAngleFactor) * 0.1) );
+                        light.penumbra = 0.3 + (Math.sin(elapsedTime * basePenumbraPulsateSpeed * lightAnimModulation + timeOffset * 1.2) + 1) / 4 * 0.6; 
+
+                        const noiseTime = elapsedTime * 0.0005 * lightAnimModulation; 
+                        const wanderMultiplier = 1.5; 
+                        const wanderX = Math.sin(noiseTime * (0.3 + light.noiseSeedX*0.2) + light.noiseOffsetXSeed) * light.wanderStrength * wanderMultiplier; 
+                        const wanderY = Math.cos(noiseTime * (0.25 + light.noiseSeedY*0.2) + light.noiseOffsetYSeed) * light.wanderStrength * wanderMultiplier;
+                        const wanderZ = Math.sin(noiseTime * (0.35 + light.noiseSeedZ*0.2) + light.noiseOffsetZSeed) * light.wanderStrength * wanderMultiplier;
+                        
+                        let orbitRadius;
+                        const modelCenter = this.three.currentModel ? this.three.currentModel.position.clone() : new THREE.Vector3(0,0,0);
+
+                        if (this.three.currentModel && this.three.currentModel.geometry && this.three.currentModel.geometry.boundingSphere) {
+                            const modelSphereRadius = Math.max(0.1, this.three.currentModel.geometry.boundingSphere.radius);
+                            orbitRadius = (modelSphereRadius * light.orbitalRadiusMultiplier) + light.minOrbitStandoff;
+                            orbitRadius += Math.sin(elapsedTime * effectivePosSpeed * 0.05 + timeOffset) * (modelSphereRadius * light.orbitPulsationFactor + 2.0); 
+                        } else {
+                            orbitRadius = light.baseRadius + Math.sin(elapsedTime * effectivePosSpeed * 0.05 + timeOffset) * light.radiusVariation;
+                        }
+                        orbitRadius = Math.max(orbitRadius, 0.5); 
+
+                        const mainAngle = elapsedTime * effectivePosSpeed * (0.1 + light.speedSeed * 0.05) + timeOffset;
+                        const angleX = mainAngle + light.phaseSeedX;
+                        const angleY = mainAngle * (0.8 + light.speedSeed * 0.2) + light.phaseSeedY;
+                        
+                        const orbitalX = Math.sin(angleX) * Math.cos(angleY) * orbitRadius;
+                        const orbitalY = Math.sin(angleY) * orbitRadius * (0.5 + light.orbitalYScaleSeed * 0.5); 
+                        const orbitalZ = Math.cos(angleX) * Math.cos(angleY) * orbitRadius;
+                        
+                        light.position.x = modelCenter.x + orbitalX + wanderX;
+                        light.position.y = modelCenter.y + orbitalY + wanderY;
+                        light.position.z = modelCenter.z + orbitalZ + wanderZ;
+                        
+                        const baseLerpAlpha = (0.0005 + light.speedSeed * 0.001) * 30;    
+                        const effectiveLerpAlpha = Math.min(0.05, baseLerpAlpha * lightAnimModulation); 
+                        if (this.three.currentModel && this.three.currentModel.geometry) {
+                            if (light.framesUntilNextTargetUpdate <= 0) {
+                                if (!this.three.currentModel.geometry.boundingBox) {
+                                    this.three.currentModel.geometry.computeBoundingBox();
+                                }
+                                const boundingBox = this.three.currentModel.geometry.boundingBox;
+                                if (boundingBox) {
+                                    const newTargetPos = new THREE.Vector3(
+                                        THREE.MathUtils.randFloat(boundingBox.min.x, boundingBox.max.x),
+                                        THREE.MathUtils.randFloat(boundingBox.min.y, boundingBox.max.y),
+                                        THREE.MathUtils.randFloat(boundingBox.min.z, boundingBox.max.z)
+                                    );
+                                    newTargetPos.add(this.three.currentModel.position); 
+                                    light.currentTargetGoal.copy(newTargetPos);
+                                    light.framesUntilNextTargetUpdate = this.config.LIGHT_TARGET_UPDATE_INTERVAL_FRAMES * (0.75 + Math.random() * 0.5); 
+                                } else {
+                                     light.currentTargetGoal.copy(this.three.currentModel.position); 
+                                }
+                            }
+                            light.framesUntilNextTargetUpdate--;
+                            light.target.position.lerp(light.currentTargetGoal, effectiveLerpAlpha);
+                        } else { 
+                            const fallbackTargetTime = elapsedTime * 0.1 + light.timeSeed;
+                            light.target.position.set(Math.sin(fallbackTargetTime) * 1.5, Math.cos(fallbackTargetTime * 0.8) * 1.0, Math.cos(fallbackTargetTime) * 1.5);
+                        }
+                        if(light.target.parent === null && this.three.scene) this.three.scene.add(light.target); 
+                    });
+                    
+                    const starTwinkleGlobalFactor = this.config.starTwinkleSpeedFactor; 
+                    this.three.starFieldSystems.forEach((system) => {
+                        const rotationMultiplier = 25; 
+                        system.mesh.rotation.y += delta * system.relativeRotationSpeeds.y * this.config.starRotationSpeedFactor * rotationMultiplier; 
+                        system.mesh.rotation.x += delta * system.relativeRotationSpeeds.x * this.config.starRotationSpeedFactor * rotationMultiplier; 
+                        
+                        if (system.pulsate) {
+                            const effectiveTwinkleSpeed = system.basePulsateSpeed * (1 + (starTwinkleGlobalFactor / this.config.DEFAULT_STAR_TWINKLE_SPEED_FACTOR -1) * system.twinkleSensitivity);
+                            system.mesh.material.opacity = system.baseOpacity + Math.sin(elapsedTime * effectiveTwinkleSpeed + system.pulsatePhaseOffset) * system.pulsateRange;
+                        }
+                    });
+
+                    if (this.three.renderer && this.three.scene && this.three.camera) {
+                        this.three.renderer.render(this.three.scene, this.three.camera);
+                    }
+                },
+                
+                setupOrbitControlsInteractionDetection() { 
+                    if (!this.three.controls) return;
+                    this.three.controls.manualRotation = false; 
+                    
+                    this.three.controls.addEventListener('start', () => {
+                        this.three.controls.manualRotation = true;
+                    });
+                    this.three.controls.addEventListener('end', () => {
+                        this.three.controls.manualRotation = false;
+                    });
+                },
+
+                onWindowResize() { 
+                    const container = this.elements.viewerCanvasContainer;
+                    if (this.three.camera && this.three.renderer && container) {
+                        const width = container.clientWidth;
+                        const height = container.clientHeight;
+                        if (width > 0 && height > 0) { 
+                           this.three.camera.aspect = width / height;
+                           this.three.camera.updateProjectionMatrix();
+                           this.three.renderer.setSize(width, height);
+                        }
+                    }
+                },
+                showMessage(message, isError = false, duration = 3000) { 
+                    if (!this.elements.viewerMessage || !this.cssVars) return; 
+                    this.elements.viewerMessage.innerHTML = `<p>${message}</p>`;
+                    this.elements.viewerMessage.classList.toggle('error', isError);
+                    
+                    if (isError) {
+                        this.elements.viewerMessage.style.backgroundColor = `rgba(${this.cssVars.errorRGB}, 0.92)`;
+                        this.elements.viewerMessage.style.color = '#fff'; 
+                        this.elements.viewerMessage.style.textShadow = 'none'; 
+                    } else {
+                        this.elements.viewerMessage.style.backgroundColor = 'transparent';
+                        this.elements.viewerMessage.style.color = `var(--color-accent)`; 
+                        this.elements.viewerMessage.style.textShadow = `var(--shadow-glow-accent-strong)`; 
+                    }
+                    
+                    this.elements.viewerMessage.classList.add('visible');
+                    setTimeout(() => {
+                        if (this.elements.viewerMessage) this.elements.viewerMessage.classList.remove('visible');
+                    }, duration);
+                },
+                showLoader(loaderElement, show, message = "Loading...") { 
+                     if (!loaderElement || !this.elements.initialPrompt) return;
+                    if (show) {
+                        loaderElement.querySelector('p').textContent = message;
+                        loaderElement.classList.add('visible');
+                        this.elements.initialPrompt.style.display = 'none'; 
+                    } else {
+                        loaderElement.classList.remove('visible');
+                    }
+                },
+                
+                processSTLData(arrayBuffer, fileName) {
+                    try {
+                        this.showLoader(this.elements.viewerLoader, true, "Entering Luminarium...");
+                        if (typeof THREE.STLLoader === 'undefined') throw new Error("STLLoader MIA!");
+                        
+                        const loader = new THREE.STLLoader();
+                        const geometry = loader.parse(arrayBuffer);
+                        geometry.computeVertexNormals(); 
+                        geometry.center(); 
+
+                        if (this.three.currentModel) {
+                            this.three.scene.remove(this.three.currentModel);
+                            if (this.three.currentModel.geometry) this.three.currentModel.geometry.dispose();
+                            if (this.three.currentModel.material) { 
+                                const materials = Array.isArray(this.three.currentModel.material) ? this.three.currentModel.material : [this.three.currentModel.material];
+                                materials.forEach(mat => { if(mat.map) mat.map.dispose(); mat.dispose(); });
+                            }
+                        }
+                        
+                        this.three.currentModel = new THREE.Mesh(geometry, this.three.defaultMaterial.clone()); 
+                        this.three.scene.add(this.three.currentModel);
+
+                        if (!geometry.boundingSphere) { 
+                            geometry.computeBoundingSphere(); 
+                        }
+                         if (!geometry.boundingBox) { 
+                            geometry.computeBoundingBox(); 
+                        }
+
+                        const box = new THREE.Box3().setFromObject(this.three.currentModel);
+                        const size = box.getSize(new THREE.Vector3());
+                        const center = box.getCenter(new THREE.Vector3()); 
+                        const maxSize = Math.max(size.x, size.y, size.z);
+                        const fitHeightDistance = maxSize / (2 * Math.atan(Math.PI * this.three.camera.fov / 360));
+                        const fitWidthDistance = fitHeightDistance / this.three.camera.aspect;
+                        let distance = 2.2 * Math.max(fitHeightDistance, fitWidthDistance); 
+                        distance = Math.max(distance, 0.5); 
+                        
+                        this.three.initialCameraPosition.set(this.three.currentModel.position.x, this.three.currentModel.position.y + size.y * 0.3, this.three.currentModel.position.z + distance); 
+                        this.three.initialCameraLookAt.copy(this.three.currentModel.position);
+
+                        if (this.three.controls) { 
+                            this.three.controls.target.copy(this.three.initialCameraLookAt); 
+                            this.three.controls.manualRotation = false; 
+                        }
+                        this.three.camera.position.copy(this.three.initialCameraPosition);
+                        this.three.camera.lookAt(this.three.initialCameraLookAt);
+                        if (this.three.controls) this.three.controls.update(); 
+                        
+                        this.elements.initialPrompt.style.display = 'none'; 
+                        this.showLoader(this.elements.viewerLoader, false); 
+                        this.showMessage(`"${fileName}" has entered the Luminarium!`, false, 4000);
+                        this.updateControlStates(true); 
+                        
+                    } catch (error) {
+                        console.error("Error processing STL data:", error);
+                        this.showMessage(`STL Process Error: ${error.message || 'Unknown error'}`, true);
+                        this.showLoader(this.elements.viewerLoader, false);
+                        this.updateControlStates(false); 
+                    }
+                },
+
+                handleFileUpload(files) { 
+                    if (!files || files.length === 0) {
+                        if(this.elements.stlFileInputStyled) this.elements.stlFileInputStyled.value = ''; 
+                        if(this.elements.stlFileInputHidden) this.elements.stlFileInputHidden.value = ''; 
+                        return;
+                    }
+                    const file = files[0]; 
+
+                    if (!file.name.toLowerCase().endsWith('.stl')) {
+                        this.showMessage("Invalid file. Must be .STL!", true);
+                        if(this.elements.stlFileInputStyled) this.elements.stlFileInputStyled.value = ''; 
+                        if(this.elements.stlFileInputHidden) this.elements.stlFileInputHidden.value = ''; 
+                        return;
+                    }
+                    
+                    this.showLoader(this.elements.viewerLoader, true, "Unpacking Model...");
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e_reader) => {
+                        this.processSTLData(e_reader.target.result, file.name);
+                        if(this.elements.stlFileInputStyled) this.elements.stlFileInputStyled.value = ''; 
+                        if(this.elements.stlFileInputHidden) this.elements.stlFileInputHidden.value = ''; 
+                    };
+                    reader.onerror = (error_reader) => {
+                        console.error("FileReader error:", error_reader);
+                        this.showMessage("File Read Error. Try again.", true);
+                        this.showLoader(this.elements.viewerLoader, false);
+                        if(this.elements.stlFileInputStyled) this.elements.stlFileInputStyled.value = ''; 
+                        if(this.elements.stlFileInputHidden) this.elements.stlFileInputHidden.value = ''; 
+                        this.updateControlStates(false);
+                    };
+                    reader.readAsArrayBuffer(file); 
+                },
+
+                async loadSTLFromURL(url, fileName = 'Demo Model.stl') {
+                    this.showLoader(this.elements.viewerLoader, true, `Loading Demo: ${fileName}...`);
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status} while fetching ${url}`);
+                        }
+                        const arrayBuffer = await response.arrayBuffer();
+                        this.processSTLData(arrayBuffer, fileName);
+                    } catch (error) {
+                        console.error(`Error loading STL from URL (${url}):`, error);
+                        this.showMessage(`Failed to load demo model: ${error.message}`, true);
+                        this.showLoader(this.elements.viewerLoader, false);
+                        this.updateControlStates(false);
+                    }
+                },
+                
+                clearDiscoLights() { 
+                    this.three.dynamicLights.discoLights.forEach(light => {
+                        if(light.target && light.target !== this.three.currentModel && light.target.parent) { 
+                            light.target.parent.remove(light.target);
+                        }
+                        if(light.parent) this.three.scene.remove(light); 
+                        light.dispose(); 
+                    });
+                    this.three.dynamicLights.discoLights = []; 
+                },
+
+                activateDiscoLights() { 
+                    this.clearDiscoLights(); 
+                    this.three.dynamicLights.ambientLight.intensity = 0.02; 
+                    const numLights = this.config.numDiscoLights; 
+                    for (let i = 0; i < numLights; i++) {
+                        const initialColor = this._getRandomHexColor(); 
+                        
+                        const spotLight = new THREE.SpotLight(
+                            initialColor, 
+                            this.config.lightIntensityFactor * 1.0, 
+                            120, 
+                            Math.PI / Math.max(0.1, this.config.lightConeAngleFactor), 
+                            0.01 + Math.random()*0.5, 
+                            0.5 
+                        ); 
+                        
+                        const theta = Math.random() * Math.PI * 2;
+                        const phi = Math.acos((Math.random() * 2) - 1); 
+                        const r = 15 + Math.random() * 20; 
+                        spotLight.position.set(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+                        
+                        spotLight.timeSeed = Math.random() * 2000; 
+                        spotLight.speedSeed = Math.random(); 
+                        spotLight.noiseSeedX = Math.random(); spotLight.noiseSeedY = Math.random(); spotLight.noiseSeedZ = Math.random();
+                        spotLight.noiseOffsetXSeed = Math.random() * 1000; spotLight.noiseOffsetYSeed = Math.random() * 1000; spotLight.noiseOffsetZSeed = Math.random() * 1000;
+                        spotLight.targetNoiseSeedX = Math.random() * 1000; spotLight.targetNoiseSeedY = Math.random() * 1000; spotLight.targetNoiseSeedZ = Math.random() * 1000;
+                        spotLight.wanderStrength = 1.0 + Math.random() * 2.0; 
+                        
+                        spotLight.baseRadius = 12 + Math.random() * 18; 
+                        spotLight.radiusVariation = 6 + Math.random() * 12;
+
+                        spotLight.orbitalRadiusMultiplier = 1.0 + Math.random() * 1.5; 
+                        spotLight.minOrbitStandoff = 3 + Math.random() * 7;      
+                        spotLight.orbitPulsationFactor = 0.1 + Math.random() * 0.2; 
+                        spotLight.phaseSeedX = Math.random() * Math.PI * 2; 
+                        spotLight.phaseSeedY = Math.random() * Math.PI * 2; 
+                        spotLight.phaseSeedZ = Math.random() * Math.PI * 2; 
+                        spotLight.orbitalYScaleSeed = Math.random(); 
+
+                        spotLight.currentTargetGoal = new THREE.Vector3();
+                        spotLight.framesUntilNextTargetUpdate = 0; 
+
+                        const targetObject = new THREE.Object3D(); 
+                        if(this.three.scene) this.three.scene.add(targetObject); 
+                        spotLight.target = targetObject;
+
+                        if(this.three.scene) this.three.scene.add(spotLight);
+                        this.three.dynamicLights.discoLights.push(spotLight);
+                    }
+                },
+                updateLightIntensities() { /* Animation loop handles this based on config */ },
+                updateLightConeAngles() { /* Animation loop handles this based on config */ },
+
+                setupStarfield() { 
+                    this.three.starFieldSystems.forEach(system => {
+                        if (system.mesh.parent) this.three.scene.remove(system.mesh);
+                        if (system.mesh.geometry) system.mesh.geometry.dispose();
+                        if (system.mesh.material.map) system.mesh.material.map.dispose(); 
+                        if (system.mesh.material) system.mesh.material.dispose();
+                    });
+                    this.three.starFieldSystems = [];
+
+                    const createStarLayer = (particleCount, baseSize, opacity, layerRotationSpeedFactor, pulsate = false, basePulsateSpeed = 0.1, pulsateRange = 0.2, minRadius = 1500, maxRadiusVariation = 8500) => {
+                        const material = new THREE.PointsMaterial({
+                            size: baseSize, map: this._createStarTexture(baseSize * 0.5), 
+                            blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
+                            opacity: opacity, fog: false, sizeAttenuation: true 
+                        });
+                        
+                        const geometry = new THREE.BufferGeometry();
+                        const vertices = [];
+                        for (let i = 0; i < particleCount * this.config.starDensityFactor; i++) { 
+                            const radius = minRadius + Math.random() * maxRadiusVariation; 
+                            const theta = Math.random() * Math.PI * 2;
+                            const phi = Math.acos((Math.random() * 2) - 1);
+                            vertices.push(radius * Math.sin(phi) * Math.cos(theta), radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi));
+                        }
+                        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                        
+                        const points = new THREE.Points(geometry, material);
+                        if(this.three.scene) this.three.scene.add(points);
+                        this.three.starFieldSystems.push({ 
+                            mesh: points, 
+                            relativeRotationSpeeds: {
+                                x: (Math.random() - 0.5) * 2 * layerRotationSpeedFactor, 
+                                y: (Math.random() - 0.5) * 2 * layerRotationSpeedFactor
+                            },
+                            pulsate: pulsate, baseOpacity: opacity,
+                            basePulsateSpeed: basePulsateSpeed * (0.1 + Math.random()*0.9), 
+                            pulsateRange: pulsateRange * (0.3 + Math.random()*0.7), 
+                            pulsatePhaseOffset: Math.random() * Math.PI * 50,
+                            twinkleSensitivity: 0.3 + Math.random() * 0.7 
+                        });
+                    };
+
+                    createStarLayer(30000, 0.8, 0.60, 0.015, true, 0.08, 0.25, 7000, 5000); 
+                    createStarLayer(25000, 1.5, 0.75, 0.03, true, 0.06, 0.4, 4000, 4000);  
+                    createStarLayer(15000, 2.8, 0.90, 0.05, true, 0.04, 0.55, 2000, 3000); 
+                    createStarLayer(8000,  4.5, 1.00, 0.08, true, 0.10, 0.35, 600, 1500);   
+                },
+
+                _createStarTexture(coreSizeFactor = 1) { 
+                    const canvas = document.createElement('canvas'); const size = 128; 
+                    canvas.width = size; canvas.height = size; const ctx = canvas.getContext('2d');
+                    const center = size / 2; const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+                    const coreBrightness = Math.min(1, 0.15 * coreSizeFactor); 
+                    gradient.addColorStop(0, 'rgba(255,255,255,1)'); gradient.addColorStop(coreBrightness, `rgba(255,255,240,0.95)`); 
+                    gradient.addColorStop(Math.min(1, coreBrightness + 0.25), `rgba(255,240,220,0.6)`); gradient.addColorStop(1, 'rgba(200,200,255,0)'); 
+                    ctx.fillStyle = gradient; ctx.fillRect(0, 0, size, size);
+                    const texture = new THREE.CanvasTexture(canvas); texture.encoding = THREE.sRGBEncoding; return texture;
+                },
+                
+                applyDiscoScene() { 
+                    this.activeScenePreset = { name: 'MakerDeck Space-Time Luminarium (STL)' }; 
+                    console.log(`Applying Scene: ${this.activeScenePreset.name}`);
+                    this.setupStarfield(); 
+                    this.activateDiscoLights(); 
+                    this.showMessage(`Welcome to the Space-Time Luminarium!`, false, 3000);
+                },
+                
+                captureSceneWithWatermark() { 
+                    if (!this.three.renderer) return;
+                    this.showMessage("Capturing Luminarium Scene...", false, 1500);
+                    let oldSceneBg = this.three.scene.background;
+                    if (!oldSceneBg || (oldSceneBg && !oldSceneBg.isColor && !oldSceneBg.isTexture)) { this.three.scene.background = new THREE.Color(0x000000); }
+                    this.three.renderer.render(this.three.scene, this.three.camera); 
+                    const imgData = this.three.renderer.domElement.toDataURL('image/png');
+                    this.three.scene.background = oldSceneBg; 
+                    const offscreenCanvas = document.createElement('canvas'); const offscreenCtx = offscreenCanvas.getContext('2d');
+                    const img = new Image();
+                    img.onload = () => {
+                        offscreenCanvas.width = img.width; offscreenCanvas.height = img.height;
+                        offscreenCtx.drawImage(img, 0, 0);
+                        const watermarkText = "MakerDeck Luminarium"; 
+                        offscreenCtx.font = "bold 16px Audiowide, cursive"; offscreenCtx.textAlign = "right"; offscreenCtx.textBaseline = "bottom";
+                        const padding = 12; const x = offscreenCanvas.width - padding; const y = offscreenCanvas.height - padding;
+                        offscreenCtx.strokeStyle = "rgba(0,0,0,0.9)"; offscreenCtx.lineWidth = 2; 
+                        offscreenCtx.strokeText(watermarkText, x, y);
+                        offscreenCtx.fillStyle = "rgba(255,255,255,0.75)"; offscreenCtx.fillText(watermarkText, x, y);
+                        const watermarkedImgData = offscreenCanvas.toDataURL('image/png');
+                        const link = document.createElement('a'); link.download = 'MakerDeck_Luminarium_Scene.png'; link.href = watermarkedImgData;
+                        document.body.appendChild(link); link.click(); document.body.removeChild(link); 
+                        this.showMessage("Image Captured - Check Your Downloads Folder", false, 3000); 
+                    };
+                    img.onerror = () => { this.showMessage("Error processing image for capture.", true); };
+                    img.src = imgData;
+                },
+            };
+
+            App.init(); 
+
+        }, 150); 
+    });
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1CQ4D3VQ3L"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1CQ4D3VQ3L');
+    </script>
+</body>
+</html>
